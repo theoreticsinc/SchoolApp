@@ -13,6 +13,11 @@
 		17B46C571B784036004E9E09 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17B46C561B784036004E9E09 /* Images.xcassets */; };
 		17B46C5A1B784036004E9E09 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 17B46C581B784036004E9E09 /* LaunchScreen.xib */; };
 		17B46C661B784036004E9E09 /* SchoolAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B46C651B784036004E9E09 /* SchoolAppTests.swift */; };
+		17B46C731B78413F004E9E09 /* CenterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B46C6F1B78413F004E9E09 /* CenterViewController.swift */; };
+		17B46C741B78413F004E9E09 /* ContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B46C701B78413F004E9E09 /* ContainerViewController.swift */; };
+		17B46C751B78413F004E9E09 /* SidePanelViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B46C711B78413F004E9E09 /* SidePanelViewController.swift */; };
+		17B46C761B78413F004E9E09 /* Animal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17B46C721B78413F004E9E09 /* Animal.swift */; };
+		17B46C781B78430D004E9E09 /* theoretics512.png in Resources */ = {isa = PBXBuildFile; fileRef = 17B46C771B78430D004E9E09 /* theoretics512.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +41,11 @@
 		17B46C5F1B784036004E9E09 /* SchoolAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SchoolAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		17B46C641B784036004E9E09 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		17B46C651B784036004E9E09 /* SchoolAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SchoolAppTests.swift; sourceTree = "<group>"; };
+		17B46C6F1B78413F004E9E09 /* CenterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CenterViewController.swift; sourceTree = "<group>"; };
+		17B46C701B78413F004E9E09 /* ContainerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContainerViewController.swift; sourceTree = "<group>"; };
+		17B46C711B78413F004E9E09 /* SidePanelViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SidePanelViewController.swift; sourceTree = "<group>"; };
+		17B46C721B78413F004E9E09 /* Animal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Animal.swift; sourceTree = "<group>"; };
+		17B46C771B78430D004E9E09 /* theoretics512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = theoretics512.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -77,11 +87,16 @@
 		17B46C4C1B784035004E9E09 /* SchoolApp */ = {
 			isa = PBXGroup;
 			children = (
+				17B46C6F1B78413F004E9E09 /* CenterViewController.swift */,
+				17B46C701B78413F004E9E09 /* ContainerViewController.swift */,
+				17B46C711B78413F004E9E09 /* SidePanelViewController.swift */,
+				17B46C721B78413F004E9E09 /* Animal.swift */,
 				17B46C4F1B784035004E9E09 /* AppDelegate.swift */,
 				17B46C511B784035004E9E09 /* ViewController.swift */,
 				17B46C531B784035004E9E09 /* Main.storyboard */,
 				17B46C561B784036004E9E09 /* Images.xcassets */,
 				17B46C581B784036004E9E09 /* LaunchScreen.xib */,
+				17B46C771B78430D004E9E09 /* theoretics512.png */,
 				17B46C4D1B784035004E9E09 /* Supporting Files */,
 			);
 			path = SchoolApp;
@@ -194,6 +209,7 @@
 			files = (
 				17B46C551B784035004E9E09 /* Main.storyboard in Resources */,
 				17B46C5A1B784036004E9E09 /* LaunchScreen.xib in Resources */,
+				17B46C781B78430D004E9E09 /* theoretics512.png in Resources */,
 				17B46C571B784036004E9E09 /* Images.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -212,8 +228,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17B46C731B78413F004E9E09 /* CenterViewController.swift in Sources */,
 				17B46C521B784035004E9E09 /* ViewController.swift in Sources */,
+				17B46C751B78413F004E9E09 /* SidePanelViewController.swift in Sources */,
+				17B46C741B78413F004E9E09 /* ContainerViewController.swift in Sources */,
 				17B46C501B784035004E9E09 /* AppDelegate.swift in Sources */,
+				17B46C761B78413F004E9E09 /* Animal.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -343,6 +363,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = SchoolApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -353,6 +374,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = SchoolApp/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
