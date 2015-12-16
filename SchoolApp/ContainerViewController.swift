@@ -15,10 +15,17 @@ enum SlideOutState {
   case RightPanelExpanded
 }
 
-class ContainerViewController: UIViewController {
+class ContainerViewController: UIViewController, NewsLetterViewControllerDelegate,EventsViewControllerDelegate {
+    
+    var currentController: String = "Main"
   
-  var centerNavigationController: UINavigationController!
-  var centerViewController: CenterViewController!
+    var centerNavigationController: UINavigationController!
+    var centerViewController: CenterViewController!
+    var newsLetterViewController: NewsLetterViewController!
+    var newsletterDetailsViewController: NewsletterDetailsViewController!
+    var eventsViewController: EventsTableViewController!
+
+
   
   var currentState: SlideOutState = .BothCollapsed {
     didSet {
@@ -46,117 +53,173 @@ class ContainerViewController: UIViewController {
     
     centerNavigationController.didMoveToParentViewController(self)
     
-    let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
-    centerNavigationController.view.addGestureRecognizer(panGestureRecognizer)
+    //let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: "handlePanGesture:")
+    //centerNavigationController.view.addGestureRecognizer(panGestureRecognizer)
   }
+    
+    //SIDE PANELS
+    
+    func toggleLeftPanel(callingController: String) {
+        currentController = callingController
+        print("currentController = \(currentController)")
+        let notAlreadyExpanded = (currentState != .LeftPanelExpanded)
+        
+        if notAlreadyExpanded {
+            addLeftPanelViewController()
+        }
+        
+        animateLeftPanel(shouldExpand: notAlreadyExpanded)
+    }
+    
+    func toggleRightPanel() {
+        let notAlreadyExpanded = (currentState != .RightPanelExpanded)
+        
+        if notAlreadyExpanded {
+            addRightPanelViewController()
+        }
+        
+        animateRightPanel(shouldExpand: notAlreadyExpanded)
+    }
+    
+    func collapseSidePanels() {
+        switch (currentState) {
+        case .RightPanelExpanded:
+            toggleRightPanel()
+        case .LeftPanelExpanded:
+            toggleLeftPanel(currentController)
+        default:
+            break
+        }
+    }
+    
+    func addLeftPanelViewController() {
+        if (leftViewController == nil) {
+            leftViewController = UIStoryboard.leftViewController()
+            leftViewController!.menuItems = MenuItems.allMenus()
+            
+            addChildSidePanelController(leftViewController!)
+        }
+    }
+    
+    func addChildSidePanelController(sidePanelController: SidePanelViewController) {
+        sidePanelController.delegate = centerViewController
+        
+        view.insertSubview(sidePanelController.view, atIndex: 0)
+        
+        addChildViewController(sidePanelController)
+        sidePanelController.didMoveToParentViewController(self)
+    }
+    
+    func addRightPanelViewController() {
+        /*if (rightViewController == nil) {
+        rightViewController = UIStoryboard.rightViewController()
+        rightViewController!.animals = Animal.allDogs()
+        
+        addChildSidePanelController(rightViewController!)
+        }*/
+    }
+    
+    func animateLeftPanel(shouldExpand shouldExpand: Bool) {
+        if (shouldExpand) {
+            currentState = .LeftPanelExpanded
+            
+            animateCenterPanelXPosition(targetPosition: CGRectGetWidth(centerNavigationController.view.frame) - centerPanelExpandedOffset)
+        } else {
+            animateCenterPanelXPosition(targetPosition: 0) { finished in
+                self.currentState = .BothCollapsed
+                
+                self.leftViewController!.view.removeFromSuperview()
+                self.leftViewController = nil;
+            }
+        }
+    }
+    
+    func animateCenterPanelXPosition(targetPosition targetPosition: CGFloat, completion: ((Bool) -> Void)! = nil) {
+        UIView.animateWithDuration(0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .CurveEaseInOut, animations: {
+            self.centerNavigationController.view.frame.origin.x = targetPosition
+            }, completion: completion)
+    }
+    
+    func animateRightPanel(shouldExpand shouldExpand: Bool) {
+        if (shouldExpand) {
+            currentState = .RightPanelExpanded
+            
+            animateCenterPanelXPosition(targetPosition: -CGRectGetWidth(centerNavigationController.view.frame) + centerPanelExpandedOffset)
+        } else {
+            animateCenterPanelXPosition(targetPosition: 0) { _ in
+                self.currentState = .BothCollapsed
+                
+                self.rightViewController!.view.removeFromSuperview()
+                self.rightViewController = nil;
+            }
+        }
+    }
+    
+    func showShadowForCenterViewController(shouldShowShadow: Bool) {
+        if (shouldShowShadow) {
+            centerNavigationController.view.layer.shadowOpacity = 0.8
+        } else {
+            centerNavigationController.view.layer.shadowOpacity = 0.0
+        }
+    }
+    
   
 }
 
 // MARK: CenterViewController delegate
 
 extension ContainerViewController: CenterViewControllerDelegate {
-
-  func toggleLeftPanel() {
-    let notAlreadyExpanded = (currentState != .LeftPanelExpanded)
     
-    if notAlreadyExpanded {
-      addLeftPanelViewController()
-    }
-    
-    animateLeftPanel(shouldExpand: notAlreadyExpanded)
-  }
-  
-  func toggleRightPanel() {
-    let notAlreadyExpanded = (currentState != .RightPanelExpanded)
-    
-    if notAlreadyExpanded {
-      addRightPanelViewController()
-    }
-    
-    animateRightPanel(shouldExpand: notAlreadyExpanded)
-  }
-  
-  func collapseSidePanels() {
-    switch (currentState) {
-    case .RightPanelExpanded:
-      toggleRightPanel()
-    case .LeftPanelExpanded:
-      toggleLeftPanel()
-    default:
-      break
-    }
-  }
-  
-  func addLeftPanelViewController() {
-    if (leftViewController == nil) {
-      leftViewController = UIStoryboard.leftViewController()
-      leftViewController!.animals = Animal.allCats()
-      
-      addChildSidePanelController(leftViewController!)
-    }
-  }
-  
-  func addChildSidePanelController(sidePanelController: SidePanelViewController) {
-    sidePanelController.delegate = centerViewController
-    
-    view.insertSubview(sidePanelController.view, atIndex: 0)
-    
-    addChildViewController(sidePanelController)
-    sidePanelController.didMoveToParentViewController(self)
-  }
-  
-  func addRightPanelViewController() {
-    if (rightViewController == nil) {
-      rightViewController = UIStoryboard.rightViewController()
-      rightViewController!.animals = Animal.allDogs()
-      
-      addChildSidePanelController(rightViewController!)
-    }
-  }
-  
-  func animateLeftPanel(#shouldExpand: Bool) {
-    if (shouldExpand) {
-      currentState = .LeftPanelExpanded
-      
-      animateCenterPanelXPosition(targetPosition: CGRectGetWidth(centerNavigationController.view.frame) - centerPanelExpandedOffset)
-    } else {
-      animateCenterPanelXPosition(targetPosition: 0) { finished in
-        self.currentState = .BothCollapsed
+    func gotoMainController() {
         
-        self.leftViewController!.view.removeFromSuperview()
-        self.leftViewController = nil;
-      }
-    }
-  }
-  
-  func animateCenterPanelXPosition(#targetPosition: CGFloat, completion: ((Bool) -> Void)! = nil) {
-    UIView.animateWithDuration(0.5, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0, options: .CurveEaseInOut, animations: {
-      self.centerNavigationController.view.frame.origin.x = targetPosition
-      }, completion: completion)
-  }
-  
-  func animateRightPanel(#shouldExpand: Bool) {
-    if (shouldExpand) {
-      currentState = .RightPanelExpanded
-      
-      animateCenterPanelXPosition(targetPosition: -CGRectGetWidth(centerNavigationController.view.frame) + centerPanelExpandedOffset)
-    } else {
-      animateCenterPanelXPosition(targetPosition: 0) { _ in
-        self.currentState = .BothCollapsed
+        //if (currentController == "Newsletters") {
+            print("going to Main controller")
+            centerNavigationController.view.removeFromSuperview()
+            
+            centerViewController = UIStoryboard.centerViewController()
+            centerViewController.delegate = self
+            centerNavigationController = UINavigationController(rootViewController: centerViewController)
+            view.addSubview(centerNavigationController.view)
+            addChildViewController(centerNavigationController)
         
-        self.rightViewController!.view.removeFromSuperview()
-        self.rightViewController = nil;
-      }
+        
     }
-  }
-  
-  func showShadowForCenterViewController(shouldShowShadow: Bool) {
-    if (shouldShowShadow) {
-      centerNavigationController.view.layer.shadowOpacity = 0.8
-    } else {
-      centerNavigationController.view.layer.shadowOpacity = 0.0
+    func gotoNewslettersController() {
+        
+            print("going to newsLetters controller")
+            centerNavigationController.view.removeFromSuperview()
+            
+            newsLetterViewController = UIStoryboard.newsLetterViewController()
+            newsLetterViewController.delegate = self
+            centerNavigationController = UINavigationController(rootViewController: newsLetterViewController)
+            view.addSubview(centerNavigationController.view)
+            addChildViewController(centerNavigationController)
+        
+        
     }
-  }
+    func gotoNewsletterDetailsController() {
+        //
+        print(" going to newsletterDetailsViewController")
+        centerNavigationController.view.removeFromSuperview()
+        
+        newsletterDetailsViewController = UIStoryboard.newsLetterDetailsViewController()
+        //newsletterDetailsViewController.delegate = self
+        centerNavigationController = UINavigationController(rootViewController: newsletterDetailsViewController)
+        view.addSubview(centerNavigationController.view)
+        addChildViewController(centerNavigationController)
+    }
+    func gotoEventsController() {
+        
+        print("going to Events controller")
+        centerNavigationController.view.removeFromSuperview()
+        
+        eventsViewController = UIStoryboard.eventsViewController()
+        eventsViewController.delegate = self
+        centerNavigationController = UINavigationController(rootViewController: eventsViewController)
+        view.addSubview(centerNavigationController.view)
+        addChildViewController(centerNavigationController)
+    }
+    
   
 }
 
@@ -209,5 +272,21 @@ private extension UIStoryboard {
   class func centerViewController() -> CenterViewController? {
     return mainStoryboard().instantiateViewControllerWithIdentifier("CenterViewController") as? CenterViewController
   }
+    /*
+  class func newsLetterViewController() -> HomeViewController? {
+    return mainStoryboard().instantiateViewControllerWithIdentifier("NewsLetterViewController") as? HomeViewController
+  }*/
+    
+    class func newsLetterViewController() -> NewsLetterViewController? {
+    return mainStoryboard().instantiateViewControllerWithIdentifier("NewsLetterViewController") as? NewsLetterViewController
+    }
+    
+    class func newsLetterDetailsViewController() -> NewsletterDetailsViewController? {
+        return mainStoryboard().instantiateViewControllerWithIdentifier("NewsLetterDetailsViewController") as? NewsletterDetailsViewController
+    }
+    
+    class func eventsViewController() -> EventsTableViewController? {
+        return mainStoryboard().instantiateViewControllerWithIdentifier("EventsTableViewController") as? EventsTableViewController
+    }
   
 }

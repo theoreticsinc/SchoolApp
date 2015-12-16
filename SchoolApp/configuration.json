@@ -1,0 +1,11 @@
+{
+    "config":
+    {
+        "list":
+        [
+         {"id":"0","newsletters":"http://www.theoreticsinc.com/ph/apps/school/newsletters.json"},
+         {"id":"1","alerts":"http://www.theoreticsinc.com/ph/apps/school/alerts.json"}
+         
+        ]
+    }
+}
