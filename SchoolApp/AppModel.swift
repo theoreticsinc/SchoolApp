@@ -9,7 +9,7 @@
 
 import Foundation
 
-class AppModel: NSObject, CustomStringConvertible {
+class AppModel: NSObject {
   let name: String
   let appStoreURL: String
   

@@ -2,40 +2,54 @@
 //  CenterViewController.swift
 //  SlideOutNavigation
 //
-//  Created by James Frost on 03/08/2014.
-//  Copyright (c) 2014 James Frost. All rights reserved.
+//  Created by Angelo Dizon on 03/08/2014.
+//  Copyright (c) 2014 Angelo Dizon. All rights reserved.
 //
 
 import UIKit
 
-@objc
 protocol CenterViewControllerDelegate {
-  optional func toggleLeftPanel(callingController: String)
-  optional func collapseSidePanels()
-  optional func gotoMainController()
-  optional func gotoNewslettersController()
-  optional func gotoEventsController()
+   func toggleLeftPanel(callingController: String)
+   func collapseSidePanels()
+   func gotoMainController()
+   func gotoNewslettersController()
+   func gotoEventsController()
 }
 
 class CenterViewController: UIViewController, UITabBarControllerDelegate{
+    
+    
+    @IBOutlet weak var btn_alert: UIButton!
   
+    @IBOutlet weak var btn_calendar: UIButton!
+    
+    @IBOutlet weak var btn_events: UIButton!
+    
+    @IBOutlet weak var btn_newsletter: UIButton!
+    
+    
     @IBOutlet weak private var imageView: UIImageView!
     @IBOutlet weak private var titleLabel: UILabel!
     
     @IBOutlet weak var navTitle: UINavigationItem!
     
-    @IBOutlet weak var todayLbl: UILabel!
+    //@IBOutlet weak var todayLbl: UILabel!
     
     
-    @IBOutlet weak var tabBar: UITabBar!
+    //@IBOutlet weak var tabBar: UITabBar!
     
     
     var delegate: CenterViewControllerDelegate?
     
     
+    
+    @IBAction func touchup_alert(sender: AnyObject) {
+        delegate?.gotoNewslettersController()
+    }
+    
     // MARK: Button actions
     @IBAction func menuTapped(sender: AnyObject) {
-        delegate?.toggleLeftPanel?("Main")
+        delegate?.toggleLeftPanel("Main")
     }
   
     
@@ -51,10 +65,10 @@ class CenterViewController: UIViewController, UITabBarControllerDelegate{
             //delegate?.gotoMainController!()
         }
         else if item.title! == "Events" {
-            delegate?.gotoEventsController!()
+            delegate?.gotoEventsController()
         }
         else if item.title! == "Alerts" {
-            delegate?.gotoNewslettersController?()
+            delegate?.gotoNewslettersController()
             /*
             
             let storyboard = UIStoryboard(name: "Main", bundle: NSBundle.mainBundle())
@@ -97,8 +111,8 @@ class CenterViewController: UIViewController, UITabBarControllerDelegate{
         let date = NSDate()
         let formatter = NSDateFormatter()
         formatter.dateStyle = .ShortStyle
-        todayLbl.textAlignment = NSTextAlignment.Justified
-        todayLbl.text = "Today    " + formatter.stringFromDate(date)
+        //todayLbl.textAlignment = NSTextAlignment.Justified
+        //todayLbl.text = "Today    " + formatter.stringFromDate(date)
         
         let str = "2013-07-21 19:32:00"
         
@@ -117,10 +131,11 @@ class CenterViewController: UIViewController, UITabBarControllerDelegate{
         super.viewDidLoad()
         initNavBar()
         
-        let tabArray = tabBar.items as NSArray!
-        let tabItem = tabArray.objectAtIndex(0) as! UITabBarItem
-        tabBar.selectedItem = tabItem
-        tabItem.badgeValue = "34"
+        //let tabArray = tabBar.items as NSArray!
+        //let tabItem = tabArray.objectAtIndex(0) as! UITabBarItem
+        //tabBar.selectedItem = tabItem
+        //tabItem.badgeValue = "34"
+        
         
     }
     
@@ -137,14 +152,15 @@ class CenterViewController: UIViewController, UITabBarControllerDelegate{
     
 }
 
+
 extension CenterViewController: SidePanelViewControllerDelegate {
-  @objc func menuSelected(menuItem: MenuItems) {
+    func menuSelected(menuItem: MenuItems) {
     //imageView.image = menuItem.image
     //titleLabel.text = menuItem.title
     print(menuItem.title)
     let choice = menuItem.title
     if (choice == "Home") {
-        delegate?.gotoMainController?()
+        delegate?.gotoMainController()
     }
     else if (choice == "Newsletters") {
         /*
@@ -153,10 +169,9 @@ extension CenterViewController: SidePanelViewControllerDelegate {
         let VC = storyboard.instantiateViewControllerWithIdentifier("NewsLetterViewController") as! NewsLetterViewController
         UIView.transitionFromView(self.view, toView: VC.view, duration: 1, options: UIViewAnimationOptions.CurveEaseIn, completion: nil)
         */
-        delegate?.gotoNewslettersController?()
+        delegate?.gotoNewslettersController()
     }
-    delegate?.collapseSidePanels?()
+    delegate?.collapseSidePanels()
   }
-    
     
 }

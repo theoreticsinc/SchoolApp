@@ -84,8 +84,9 @@ class EventsTableViewController: UIViewController, NSFetchedResultsControllerDel
         fetchRequest.predicate = nil
         fetchRequest.sortDescriptors = [sortDescriptor]
         fetchRequest.fetchBatchSize = 20
+        do {
         let fetchedResults =
-        managedObjectContext!.executeFetchRequest(fetchRequest) as? [NSManagedObject]
+        try managedObjectContext!.executeFetchRequest(fetchRequest) as? [NSManagedObject]
         
         if let results = fetchedResults {
             print("EVENTS COUNT: \(results.count)")
@@ -93,7 +94,9 @@ class EventsTableViewController: UIViewController, NSFetchedResultsControllerDel
         } else {
             //println("Could not fetch \(error), \(error!.userInfo)")
         }
-        
+        } catch _ {
+            
+        }
         return fetchRequest
     }
     
@@ -213,14 +216,17 @@ class EventsTableViewController: UIViewController, NSFetchedResultsControllerDel
         let fetchRequest = NSFetchRequest(entityName:"Events")
         
         var error: NSError?
-        
+        do {
         let fetchedResults =
-        managedContext.executeFetchRequest(fetchRequest) as? [NSManagedObject]
+        try managedContext.executeFetchRequest(fetchRequest) as? [NSManagedObject]
         
         if let results = fetchedResults {
             eventsList = results
         } else {
             //println("Could not fetch \(error), \(error!.userInfo)")
+        }
+        } catch _ {
+            
         }
         
     }
@@ -241,9 +247,9 @@ class EventsTableViewController: UIViewController, NSFetchedResultsControllerDel
         let fetchRequest = NSFetchRequest(entityName: "Events")
         fetchRequest.predicate = predicate
         fetchRequest.fetchLimit = 1
-        
+        do {
         let fetchedResults =
-        managedContext.executeFetchRequest(fetchRequest) as? [NSManagedObject]
+        try managedContext.executeFetchRequest(fetchRequest) as? [NSManagedObject]
         
         if let results = fetchedResults {
             if results.count > 0 {
@@ -263,6 +269,10 @@ class EventsTableViewController: UIViewController, NSFetchedResultsControllerDel
             //println("Could not fetch \(error), \(error!.userInfo)")
             return false
         }
+        } catch _ {
+            
+        }
+        return false
     }
     
     
@@ -289,9 +299,9 @@ class EventsTableViewController: UIViewController, NSFetchedResultsControllerDel
         
         fetchRequest.predicate = NSPredicate(format: "(id = %i)", id)
         fetchRequest.fetchLimit = 1
-        
+        do {
         let fetchedResults =
-        managedContext.executeFetchRequest(fetchRequest) as? [NSManagedObject]
+        try managedContext.executeFetchRequest(fetchRequest) as? [NSManagedObject]
         
         if let results = fetchedResults {
             print("Results.Count \(results.count)")
@@ -324,7 +334,9 @@ class EventsTableViewController: UIViewController, NSFetchedResultsControllerDel
             //println("Could not fetch \(error), \(error!.userInfo)")
             
         }
-        
+        } catch _ {
+            
+        }
         
     }
     
@@ -333,18 +345,18 @@ class EventsTableViewController: UIViewController, NSFetchedResultsControllerDel
         DataManager.getConfigFromServer{ (configData) -> Void in
             let json = JSON(data: configData)
             //println("retrieving Config...")
-            if let eventsUrl = json["config"]["list"][1]["events"].string  {
+            if let eventsUrl = json["config"]["items"][1]["url"].string  {
                 //------------------------------
                 DataManager.getDataFromServer(eventsUrl, success:{(data) -> Void in
                     let json = JSON(data: data)
-                    if let news = json["events"]["list"][1]["details"].string  {
-                        //println("*2* News: \(news)")
+                    if let events = json["events"]["list"][1]["details"].string  {
+                        print("*2* News: \(events)")
                         
                     }
                     //1
                     if let appArray = json["events"]["list"].array {
                         //2
-                        ////println(appArray)
+                        print(appArray)
                         //var apps = [AppModel]()
                         var count = 0
                         //3
@@ -421,19 +433,18 @@ class EventsTableViewController: UIViewController, NSFetchedResultsControllerDel
         }
         
     }
-    
-    func controller(controller: NSFetchedResultsController, didChangeObject anObject: NSManagedObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         
         switch type {
         case NSFetchedResultsChangeType.Insert:
-            tableView.insertRowsAtIndexPaths(NSArray(object: newIndexPath!) as [AnyObject] as [AnyObject], withRowAnimation: UITableViewRowAnimation.Fade)
+            tableView.insertRowsAtIndexPaths(NSArray(object: newIndexPath!) as [AnyObject] as! [NSIndexPath], withRowAnimation: UITableViewRowAnimation.Fade)
             break
         case NSFetchedResultsChangeType.Delete:
-            tableView.deleteRowsAtIndexPaths(NSArray(object: indexPath!) as [AnyObject] as [AnyObject], withRowAnimation: UITableViewRowAnimation.Fade)
+            tableView.deleteRowsAtIndexPaths(NSArray(object: indexPath!) as [AnyObject] as! [NSIndexPath], withRowAnimation: UITableViewRowAnimation.Fade)
             break
         case NSFetchedResultsChangeType.Move:
-            tableView.deleteRowsAtIndexPaths(NSArray(object: indexPath!) as [AnyObject] as [AnyObject], withRowAnimation: UITableViewRowAnimation.Fade)
-            tableView.insertRowsAtIndexPaths(NSArray(object: newIndexPath!) as [AnyObject] as [AnyObject], withRowAnimation: UITableViewRowAnimation.Fade)
+            tableView.deleteRowsAtIndexPaths(NSArray(object: indexPath!) as [AnyObject] as! [NSIndexPath], withRowAnimation: UITableViewRowAnimation.Fade)
+            tableView.insertRowsAtIndexPaths(NSArray(object: newIndexPath!) as [AnyObject] as! [NSIndexPath], withRowAnimation: UITableViewRowAnimation.Fade)
             break
         case NSFetchedResultsChangeType.Update:
             tableView.cellForRowAtIndexPath(indexPath!)

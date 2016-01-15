@@ -84,8 +84,9 @@ class NewsLetterViewController: UIViewController, NSFetchedResultsControllerDele
         fetchRequest.predicate = nil
         fetchRequest.sortDescriptors = [sortDescriptor]
         fetchRequest.fetchBatchSize = 20
+        do {
         let fetchedResults =
-        managedObjectContext!.executeFetchRequest(fetchRequest) as? [NSManagedObject]
+        try managedObjectContext!.executeFetchRequest(fetchRequest) as? [NSManagedObject]
         
         if let results = fetchedResults {
             print("NEWSLETTERS COUNT: \(results.count)")
@@ -93,7 +94,9 @@ class NewsLetterViewController: UIViewController, NSFetchedResultsControllerDele
         } else {
             //println("Could not fetch \(error), \(error!.userInfo)")
         }
-        
+        } catch _ {
+            
+        }
         return fetchRequest
     }
     
@@ -229,14 +232,17 @@ class NewsLetterViewController: UIViewController, NSFetchedResultsControllerDele
         let fetchRequest = NSFetchRequest(entityName:"Newsletters")
         
         var error: NSError?
-        
+        do {
         let fetchedResults =
-        managedContext.executeFetchRequest(fetchRequest) as? [NSManagedObject]
+        try managedContext.executeFetchRequest(fetchRequest) as? [NSManagedObject]
         
         if let results = fetchedResults {
             newsletterList = results
         } else {
             //println("Could not fetch \(error), \(error!.userInfo)")
+        }
+        } catch _ {
+            
         }
         
     }
@@ -257,9 +263,9 @@ class NewsLetterViewController: UIViewController, NSFetchedResultsControllerDele
         let fetchRequest = NSFetchRequest(entityName: "Newsletters")
         fetchRequest.predicate = predicate
         fetchRequest.fetchLimit = 1
-        
+        do {
         let fetchedResults =
-        managedContext.executeFetchRequest(fetchRequest) as? [NSManagedObject]
+        try managedContext.executeFetchRequest(fetchRequest) as? [NSManagedObject]
         
         if let results = fetchedResults {
             if results.count > 0 {
@@ -279,6 +285,10 @@ class NewsLetterViewController: UIViewController, NSFetchedResultsControllerDele
             //println("Could not fetch \(error), \(error!.userInfo)")
             return false
         }
+        } catch _ {
+            
+        }
+        return false
     }
     
     
@@ -306,9 +316,9 @@ class NewsLetterViewController: UIViewController, NSFetchedResultsControllerDele
         
         fetchRequest.predicate = NSPredicate(format: "(id = %i)", id)
         fetchRequest.fetchLimit = 1
-        
+        do {
         let fetchedResults =
-        managedContext.executeFetchRequest(fetchRequest) as? [NSManagedObject]
+        try managedContext.executeFetchRequest(fetchRequest) as? [NSManagedObject]
         
         if let results = fetchedResults {
             print("Results.Count \(results.count)")
@@ -341,7 +351,9 @@ class NewsLetterViewController: UIViewController, NSFetchedResultsControllerDele
             //println("Could not fetch \(error), \(error!.userInfo)")
             
         }
-        
+        } catch _ {
+            
+        }
         
     }
 
@@ -349,13 +361,15 @@ class NewsLetterViewController: UIViewController, NSFetchedResultsControllerDele
         self.actInd.startAnimating()
         DataManager.getConfigFromServer{ (configData) -> Void in
             let json = JSON(data: configData)
-            //println("retrieving Config...")
-            if let newsletterUrl = json["config"]["list"][0]["newsletters"].string  {
+            print("retrieving Config...")
+            print("*1* JSON: \(json)")
+            if let newsletterUrl = json["config"]["items"][0]["url"].string  {
                 print("*2* Config NewsList: \(newsletterUrl)")
                 
                 //------------------------------
                 DataManager.getDataFromServer(newsletterUrl, success:{(data) -> Void in
                     let json = JSON(data: data)
+                    print("*3* NewsLetter JSON: \(json)")
                     if let news = json["newsletters"]["items"][1]["details"].string  {
                         print("*2* News: \(news)")
                             
@@ -385,6 +399,7 @@ class NewsLetterViewController: UIViewController, NSFetchedResultsControllerDele
                             print("\(id)\(name)\(details)\(date)")
                             self.tableView.beginUpdates()
                             self.checkID(id, name: name, details:details, date: date, picURL: pic_url)
+                            //NSInternalInconsistencyException invalid number or rows
                             self.tableView.endUpdates()
                             
                         }
@@ -444,18 +459,18 @@ class NewsLetterViewController: UIViewController, NSFetchedResultsControllerDele
         
     }
     
-    func controller(controller: NSFetchedResultsController, didChangeObject anObject: NSManagedObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+    func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
         
         switch type {
         case NSFetchedResultsChangeType.Insert:
-            tableView.insertRowsAtIndexPaths(NSArray(object: newIndexPath!) as [AnyObject] as [AnyObject], withRowAnimation: UITableViewRowAnimation.Fade)
+            tableView.insertRowsAtIndexPaths(NSArray(object: newIndexPath!) as [AnyObject] as! [NSIndexPath], withRowAnimation: UITableViewRowAnimation.Fade)
             break
         case NSFetchedResultsChangeType.Delete:
-            tableView.deleteRowsAtIndexPaths(NSArray(object: indexPath!) as [AnyObject] as [AnyObject], withRowAnimation: UITableViewRowAnimation.Fade)
+            tableView.deleteRowsAtIndexPaths(NSArray(object: indexPath!) as [AnyObject] as! [NSIndexPath], withRowAnimation: UITableViewRowAnimation.Fade)
             break
         case NSFetchedResultsChangeType.Move:
-            tableView.deleteRowsAtIndexPaths(NSArray(object: indexPath!) as [AnyObject] as [AnyObject], withRowAnimation: UITableViewRowAnimation.Fade)
-            tableView.insertRowsAtIndexPaths(NSArray(object: newIndexPath!) as [AnyObject] as [AnyObject], withRowAnimation: UITableViewRowAnimation.Fade)
+            tableView.deleteRowsAtIndexPaths(NSArray(object: indexPath!) as [AnyObject] as! [NSIndexPath], withRowAnimation: UITableViewRowAnimation.Fade)
+            tableView.insertRowsAtIndexPaths(NSArray(object: newIndexPath!) as [AnyObject] as! [NSIndexPath], withRowAnimation: UITableViewRowAnimation.Fade)
             break
         case NSFetchedResultsChangeType.Update:
             tableView.cellForRowAtIndexPath(indexPath!)

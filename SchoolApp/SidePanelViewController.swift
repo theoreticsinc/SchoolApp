@@ -2,17 +2,16 @@
 //  LeftViewController.swift
 //  SlideOutNavigation
 //
-//  Created by James Frost on 03/08/2014.
-//  Copyright (c) 2014 James Frost. All rights reserved.
+//  Created by Angelo Dizon on 03/08/2014.
+//  Copyright (c) 2014 Angelo Dizon. All rights reserved.
 //
 
 import UIKit
 
-@objc protocol SidePanelViewControllerDelegate {
-  optional func menuSelected(animal: MenuItems!)
+protocol SidePanelViewControllerDelegate {
+    func menuSelected(menuItem: MenuItems)
 }
 
-@objc(SidePanelViewController)
 class SidePanelViewController : UIViewController, UIApplicationDelegate {
 
   
@@ -61,7 +60,7 @@ extension SidePanelViewController: UITableViewDelegate {
 
   func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
     let selectedMenu = menuItems[indexPath.row]
-    delegate?.menuSelected!(selectedMenu)
+    delegate?.menuSelected(selectedMenu)
   }
   
 }

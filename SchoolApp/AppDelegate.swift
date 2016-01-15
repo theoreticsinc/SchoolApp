@@ -17,6 +17,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var localNotification : UILocalNotification!
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        if #available(iOS 8.0, *) {
+            let completeAction = UIMutableUserNotificationAction()
+            completeAction.identifier = "COMPLETE_TODO" // the unique identifier for this action
+            completeAction.title = "Complete" // title for the action button
+            completeAction.activationMode = .Background // UIUserNotificationActivationMode.Background - don't bring app to foreground
+            completeAction.authenticationRequired = false // don't require unlocking before performing action
+            completeAction.destructive = true // display action in red
+        
+        let remindAction = UIMutableUserNotificationAction()
+        remindAction.identifier = "REMIND"
+        remindAction.title = "Remind in 30 minutes"
+        remindAction.activationMode = .Background
+        remindAction.destructive = false
+            
+            let todoCategory = UIMutableUserNotificationCategory()
+            todoCategory.identifier = "TODO_CATEGORY"
+            todoCategory.setActions([remindAction, completeAction], forContext: .Default) // UIUserNotificationActionContext.Default (4 actions max)
+            todoCategory.setActions([completeAction, remindAction], forContext: .Minimal) // UIUserNotificationActionContext.Minimal - for when space is limited (2 actions max)
+            
+            application.registerUserNotificationSettings(UIUserNotificationSettings(forTypes: [.Alert, .Badge, .Sound], categories: NSSet(array: [todoCategory]) as! Set<NSObject> as! Set<UIUserNotificationCategory>)) // we're now providing a set containing our category as an argument
+            
+        }
         /*window = UIWindow(frame: UIScreen.mainScreen().bounds)
         
         let containerViewController = ContainerViewController()
@@ -24,15 +46,57 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window!.rootViewController = containerViewController
         window!.makeKeyAndVisible()
         */
-        
-       
-        
-        //*localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
-        if let localNotification = UILocalNotification?() {
-            application.applicationIconBadgeNumber = 0;
+        /*
+        if let options = launchOptions {
+            if let notification = options[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
+                print(notification.alertBody)
+                print(notification.alertAction)
+                
+                if let userInfo = notification.userInfo {
+                    let customField1 = userInfo["CustomField1"] as! String
+                    print(customField1)
+                }
+            }
         }
+        if let localNotification:UILocalNotification = launchOptions?[UIApplicationLaunchOptionsLocalNotificationKey] as? UILocalNotification {
+            //do stuff with notification
+            print(localNotification.alertBody)
+            print(localNotification.alertAction)
+        }
+        */
+        //*localNotification = [launchOptions objectForKey:UIApplicationLaunchOptionsLocalNotificationKey];
+        if let lNotification = UILocalNotification?() {
+            application.applicationIconBadgeNumber = 0;
+            
+        }
+        
         return true
     }
+    func application(application: UIApplication, didReceiveLocalNotification notification: UILocalNotification) {
+        if let userInfo = notification.userInfo {
+            let customField1 = userInfo["CustomField1"] as! String
+            print("didReceiveLocalNotification: \(customField1)")
+        }
+        print(notification.alertBody)
+        print(notification.alertAction)
+        //var notificationDetails: NSDictionary = userInfo.objectForKey("aps") as! NSDictionary
+    }
+    
+    
+    func application(application: UIApplication, handleActionWithIdentifier identifier: String?, forLocalNotification notification: UILocalNotification, completionHandler: () -> Void) {
+        let item = TodoItem(deadline: notification.fireDate!, title: notification.userInfo!["title"] as! String, UUID: notification.userInfo!["UUID"] as! String!)
+        print(notification.alertBody)
+        switch (identifier!) {
+        case "COMPLETE_TODO": break
+            //TodoList.sharedInstance.removeItem(item)
+        case "REMIND": break
+            //TodoList.sharedInstance.scheduleReminderforItem(item)
+        default: // switch statements must be exhaustive - this condition should never be met
+            print("Error: unexpected notification action identifier!")
+        }
+        completionHandler() // per developer documentation, app will terminate if we fail to call this
+    }
+    
     
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
